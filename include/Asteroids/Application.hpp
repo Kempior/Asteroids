@@ -3,6 +3,8 @@
 
 #include "SFML/Graphics.hpp"
 
+class State;
+
 class Application
 {
 public:
@@ -12,6 +14,7 @@ public:
 
 private:
 	sf::RenderWindow window;
+	State *currentState;
 };
 
 #endif //ASTEROIDS_APPLICATION_HPP

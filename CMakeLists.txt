@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 include_directories(include)
 
-add_executable(Asteroids src/Asteroids.cpp include/Asteroids/Application.hpp src/Application.cpp)
+add_executable(Asteroids src/Asteroids.cpp include/Asteroids/Application.hpp src/Application.cpp include/Asteroids/States/State.hpp src/States/State.cpp include/Asteroids/States/StateGame.hpp src/States/StateGame.cpp)
 
 link_directories(lib)
 
