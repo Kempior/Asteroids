@@ -19,6 +19,7 @@ class StateGame : public State
 	std::vector<sf::TcpSocket*> clients;
 
 	const sf::IntRect worldSize;
+	unsigned int wave = 1;
 
 	std::vector<Ship> ships;
 	std::vector<Asteroid> asteroids;

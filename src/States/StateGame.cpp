@@ -27,7 +27,7 @@ StateGame::StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSo
 
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 
-	CreateAsteroids(20);
+	CreateAsteroids(10);
 }
 
 StateGame::~StateGame()
@@ -92,20 +92,7 @@ void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, float scale)
 	std::uniform_real_distribution<float> rotSpd(-30.f, 30.f);
 
 	for (int i = 0; i < howMany; ++i) {
-		Asteroid newAst (position, {spd(mt), spd(mt)});
-
-		newAst.sprite.setTextureRect({0, 0, 128, 128});
-		newAst.sprite.setOrigin(63, 63);
-
-		newAst.rotation = rot(mt);
-		newAst.rotationSpeed = rotSpd(mt);
-
-		newAst.sprite.setTexture(atlasTexture);
-
-		newAst.sprite.scale({1.f, 1.f});
-		newAst.radius = scale * 64;
-
-		asteroids.push_back(newAst);
+		asteroids.push_back(CreateAsteroid(position, {spd(mt), spd(mt)}, rot(mt), rotSpd(mt), 1));
 	}
 }
 
@@ -277,6 +264,12 @@ void StateGame::update(float dt)
 			}
 		}
 	}
+
+	if (asteroids.empty()) {
+		wave++;
+		CreateAsteroids(10 * wave);
+	}
+
 	// Collisions between player and asteroids
 	for (auto &asteroid : asteroids) {
 		if (!ships[playerID].isDestroyed && ships[playerID].Collide(asteroid)) {
