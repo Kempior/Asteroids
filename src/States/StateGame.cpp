@@ -373,7 +373,7 @@ void StateGame::recivePackets()
 						ships[id].isDestroyed = true;
 						
 						sf::Packet repacket;
-						repacket << PacketType::PROJECTILESPAWN << id;
+						repacket << PacketType::SHIPDESTROYED << id;
 						sendPacket(repacket, client);
 						
 						break;
