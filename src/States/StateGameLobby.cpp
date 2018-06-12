@@ -36,15 +36,17 @@ isHost(isHost)
 			delete clients.back();
 			clients.pop_back();
 			
+			unsigned int id = 1;
+			
 			for(auto client : clients)
 			{
 				sf::Packet packet;
-				packet << PacketType::START;
+				packet << PacketType::START << id++;
 				
 				while(client->send(packet) != sf::Socket::Done) {}
 			}
 			
-			currentState.state = new StateGame();
+			currentState.state = new StateGame(0);
 			currentState.destroyLast = true;
 		});
 	}
@@ -87,7 +89,6 @@ void StateGameLobby::update(float dt)
 	{
 		if(listener->accept(*clients.back()) == sf::Socket::Done)
 		{
-			std::cout << "Client accepted" << std::endl;
 			for(auto client : clients)
 			{
 				sf::Packet packet;
@@ -106,22 +107,20 @@ void StateGameLobby::update(float dt)
 		sf::Packet packet;
 		if(server->receive(packet) == sf::Socket::Done)
 		{
-			std::cout << "Recieved data" << std::endl;
-			
 			int packetType;
 			packet >> packetType;
-			std::cout << "PacketType: " << packetType << std::endl;
 			switch(packetType)
 			{
 				case PLAYERCOUNT:
 				{
 					packet >> playerCount;
-					std::cout << "PlayerCount: " << playerCount << std::endl;
 					break;
 				}
 				case START:
 				{
-					currentState.state = new StateGame();
+					unsigned int id;
+					packet >> id;
+					currentState.state = new StateGame(id);
 					currentState.destroyLast = true;
 					break;
 				}
