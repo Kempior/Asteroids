@@ -29,8 +29,8 @@ public:
 	//Yes, I'm lazy;
 	explicit StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 
-	void CreateAsteroids(int howMany);
-	void CreateAsteroids(int howMany, sf::Vector2f position);
+	void CreateAsteroids(int howMany, unsigned seed = (unsigned)time(nullptr));
+	void CreateAsteroids(int howMany, sf::Vector2f position, unsigned seed = (unsigned)time(nullptr));
 
 	void CreateShip(sf::Vector2f position);
 
