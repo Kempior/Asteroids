@@ -44,6 +44,9 @@ void StateGame::CreateAsteroids(int howMany) {
 
 		newAst.sprite.setTexture(atlasTexture);
 
+		newAst.sprite.scale({1.f, 1.f});
+		newAst.radius = 64;
+
 		asteroids.push_back(newAst);
 	}
 }
@@ -81,6 +84,9 @@ void StateGame::CreateShip(sf::Vector2f position) {
 
 	newShip.sprite.setTexture(atlasTexture);
 
+	newShip.sprite.scale({0.5, 0.5});
+	newShip.radius = 32;
+
 	ships.push_back(newShip);
 }
 
@@ -89,13 +95,29 @@ void StateGame::handleEvent(const sf::Event& event)
 	if (event.type == sf::Event::KeyPressed) {
 		switch (event.key.code) {
 			case sf::Keyboard::W:
-			{
-				ships[playerID].isAccelarating = true;
-				sf::Packet packet;
-				packet << PacketType::MOVEFORWARD << playerID;
-				sendPacket(packet);
+				ships[playerID].isAccelerating = true;
 				break;
-			}
+			case sf::Keyboard::A:
+				ships[playerID].isRotatingLeft = true;
+				break;
+			case sf::Keyboard::D:
+				ships[playerID].isRotatingRight = true;
+				break;
+			default:
+				break;
+		}
+	}
+	else if (event.type == sf::Event::KeyReleased) {
+		switch (event.key.code) {
+			case sf::Keyboard::W:
+				ships[playerID].isAccelerating = false;
+				break;
+			case sf::Keyboard::A:
+				ships[playerID].isRotatingLeft = false;
+				break;
+			case sf::Keyboard::D:
+				ships[playerID].isRotatingRight = false;
+				break;
 			default:
 				break;
 		}
@@ -127,10 +149,19 @@ void StateGame::update(float dt)
 			roid.position.y += roid.velocity.y * dt;
 		}
 	}
+	
 	for (auto &ship : ships) {
-		if (ship.isAccelarating) {
-			ships[playerID].velocity += ships[playerID].accelaration * ships[playerID].Forward();
-			ship.isAccelarating = false;
+		if (ship.isAccelerating) {
+			ships[playerID].velocity += ships[playerID].acceleration * ships[playerID].Forward();
+		}
+		if (ship.isRotatingLeft && !ship.isRotatingRight) {
+			ships[playerID].rotationSpeed = -ships[playerID].rotationSteering;
+		}
+		else if (!ship.isRotatingLeft && ship.isRotatingRight) {
+			ships[playerID].rotationSpeed = ships[playerID].rotationSteering;
+		}
+		else {
+			ships[playerID].rotationSpeed = 0.f;
 		}
 
 		ship.position += ship.velocity * dt;
@@ -155,6 +186,11 @@ void StateGame::update(float dt)
 			ship.position.y += ship.velocity.y * dt;
 		}
 	}
+	
+	auto *ship = &ships[playerID];
+	sf::Packet packet;
+	packet << PacketType::TRANSFORM << playerID << ship->position.x << ship->position.y << ship->velocity.x << ship->velocity.y << ship->rotation << ship->rotationSpeed;
+	sendPacket(packet);
 	
 	recivePackets();
 }
@@ -198,16 +234,20 @@ void StateGame::recivePackets()
 				
 				switch(packetType)
 				{
-					case MOVEFORWARD:
+					case TRANSFORM:
+					{
 						unsigned int id;
 						packet >> id;
-						ships[id].isAccelarating = true;
-						{
-							sf::Packet repacket;
-							repacket << packetType << id;
-							sendPacket(repacket);
-						}
+						
+						auto *ship = &ships[id];
+						packet >> ship->position.x >> ship->position.y >> ship->velocity.x >> ship->velocity.y >> ship->rotation >> ship->rotationSpeed;
+						
+						sf::Packet repacket;
+						repacket << packetType << id << ship->position.x << ship->position.y << ship->velocity.x << ship->velocity.y << ship->rotation << ship->rotationSpeed;
+						sendPacket(repacket);
+						
 						break;
+					}
 					default:
 						break;
 				}
@@ -224,11 +264,17 @@ void StateGame::recivePackets()
 			
 			switch(packetType)
 			{
-				case MOVEFORWARD:
+				case TRANSFORM:
+				{
 					unsigned int id;
 					packet >> id;
-					ships[id].isAccelarating = true;
+					if(id != playerID)
+					{
+						auto *ship = &ships[id];
+						packet >> ship->position.x >> ship->position.y >> ship->velocity.x >> ship->velocity.y >> ship->rotation >> ship->rotationSpeed;
+					}
 					break;
+				}
 				default:
 					break;
 			}

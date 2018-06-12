@@ -15,9 +15,7 @@ bool GameObject::Collide(GameObject &other) const {
 
 sf::Vector2f GameObject::Forward() const {
 
-	sf::Vector2f returnVec(0, 1);
-	returnVec.x = returnVec.x * sinf(rotation);
-	returnVec.y = returnVec.y * cosf(rotation);
+	sf::Vector2f returnVec(sinf(-rotation * M_PI / 180), cosf(-rotation * M_PI / 180));
 
 	return returnVec;
 }
