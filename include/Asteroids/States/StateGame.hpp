@@ -7,20 +7,23 @@
 
 class StateGame : public State
 {
+	const int playerID;
+
 	const sf::IntRect worldSize;
 
 	std::vector<Ship> ships;
 	std::vector<Asteroid> asteroids;
 
-	sf::Texture asteroidTexture;
-	sf::Texture shipTexture;
+	sf::Texture atlasTexture;
 
 public:
 	//Yes, I'm lazy;
-	explicit StateGame(sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
+	explicit StateGame(int playerID = 0, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 
 	void CreateAsteroids(int howMany);
 	void CreateAsteroids(int howMany, sf::Vector2f position);
+
+	void CreateShip(sf::Vector2f position);
 
 	void handleEvent(const sf::Event& event) override;
 	void update(float dt) override;

@@ -5,12 +5,11 @@
 
 class Ship : public GameObject {
 public:
-	explicit Ship(sf::Vector2f position = sf::Vector2f(), sf::Vector2f velocity = sf::Vector2f(), float rotation = 0.f, float rotationSpeed = 0.f)
+	explicit Ship(sf::Vector2f position = sf::Vector2f(), sf::Vector2f velocity = sf::Vector2f(), float rotation = 180.f, float rotationSpeed = 0.f)
 			: GameObject(position, velocity, rotation, rotationSpeed) {}
 
-	void Draw(sf::RenderWindow &window) override;
-
-	float accelaration;
+	bool isAccelarating = false;
+	float accelaration = 50.f;
 };
 
 

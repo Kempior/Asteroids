@@ -8,7 +8,7 @@
 
 class GameObject {
 public:
-	explicit GameObject(sf::Vector2f position = sf::Vector2f(), sf::Vector2f velocity = sf::Vector2f(), float rotation = 0.f, float rotationSpeed = 0.f)
+	explicit GameObject(sf::Vector2f position = sf::Vector2f(), sf::Vector2f velocity = sf::Vector2f(), float rotation = 180.f, float rotationSpeed = 0.f)
 			: position(position), velocity(velocity), rotation(rotation), rotationSpeed(rotationSpeed) {}
     virtual ~GameObject() = default;
 
@@ -16,12 +16,13 @@ public:
 
     sf::Vector2f position;
     sf::Vector2f velocity;
-	float rotation = 0;
-	float rotationSpeed = 0;
+	float rotation = 180.f;
+	float rotationSpeed = 0.f;
 	float radius = 1.f;
 
-    virtual void Draw(sf::RenderWindow &window) = 0;
-    virtual bool Collide(GameObject &other);
+    void Draw(sf::RenderWindow &window);
+    bool Collide(GameObject &other) const;
+	sf::Vector2f Forward() const;
 };
 
 
