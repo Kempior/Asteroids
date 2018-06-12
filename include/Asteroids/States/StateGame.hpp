@@ -18,7 +18,7 @@ class StateGame : public State
 
 public:
 	//Yes, I'm lazy;
-	explicit StateGame(int playerID = 0, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
+	explicit StateGame(int playerCount, int playerID, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 
 	void CreateAsteroids(int howMany);
 	void CreateAsteroids(int howMany, sf::Vector2f position);

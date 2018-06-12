@@ -46,7 +46,7 @@ isHost(isHost)
 				while(client->send(packet) != sf::Socket::Done) {}
 			}
 			
-			currentState.state = new StateGame(0);
+			currentState.state = new StateGame(playerCount, 0);
 			currentState.destroyLast = true;
 		});
 	}
@@ -120,7 +120,7 @@ void StateGameLobby::update(float dt)
 				{
 					unsigned int id;
 					packet >> id;
-					currentState.state = new StateGame(id);
+					currentState.state = new StateGame(playerCount, id);
 					currentState.destroyLast = true;
 					break;
 				}

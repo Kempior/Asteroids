@@ -5,7 +5,7 @@
 
 #include "Asteroids/States/StateGame.hpp"
 
-StateGame::StateGame(int playerID, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
+StateGame::StateGame(int playerCount, int playerID, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
 
 	atlasTexture.loadFromFile("../../assets/Atlas.png");
 
