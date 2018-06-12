@@ -1,12 +1,18 @@
 #include <random>
 #include <ctime>
-
+#include <utility>
 #include "SFML/Window.hpp"
 
 #include "Asteroids/States/StateGame.hpp"
+#include "Asteroids/Networking/PacketType.hpp"
 
-StateGame::StateGame(int playerCount, int playerID, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
+StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
 
+	isHost = !playerID;
+	
+	this->server = server;
+	this->clients = std::move(clients);
+	
 	atlasTexture.loadFromFile("../../assets/Atlas.png");
 
 	clearColor = sf::Color::Black;
@@ -83,8 +89,13 @@ void StateGame::handleEvent(const sf::Event& event)
 	if (event.type == sf::Event::KeyPressed) {
 		switch (event.key.code) {
 			case sf::Keyboard::W:
+			{
 				ships[playerID].isAccelarating = true;
+				sf::Packet packet;
+				packet << PacketType::MOVEFORWARD << playerID;
+				sendPacket(packet);
 				break;
+			}
 			default:
 				break;
 		}
@@ -144,6 +155,8 @@ void StateGame::update(float dt)
 			ship.position.y += ship.velocity.y * dt;
 		}
 	}
+	
+	recivePackets();
 }
 
 void StateGame::draw(sf::RenderWindow& window)
@@ -153,6 +166,73 @@ void StateGame::draw(sf::RenderWindow& window)
 	}
 	for (auto &ship : ships) {
 		ship.Draw(window);
+	}
+}
+
+void StateGame::sendPacket(sf::Packet &packet)
+{
+	if(isHost)
+	{
+		for(auto client : clients)
+		{
+			while(client->send(packet) != sf::Socket::Done) {}
+		}
+	}
+	else
+	{
+		while(server->send(packet) != sf::Socket::Done) {}
+	}
+}
+
+void StateGame::recivePackets()
+{
+	if(isHost) //Host
+	{
+		for(auto client : clients)
+		{
+			sf::Packet packet;
+			while(client->receive(packet) == sf::Socket::Done)
+			{
+				int packetType;
+				packet >> packetType;
+				
+				switch(packetType)
+				{
+					case MOVEFORWARD:
+						unsigned int id;
+						packet >> id;
+						ships[id].isAccelarating = true;
+						{
+							sf::Packet repacket;
+							repacket << packetType << id;
+							sendPacket(repacket);
+						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+	else //Client
+	{
+		sf::Packet packet;
+		while(server->receive(packet) == sf::Socket::Done)
+		{
+			int packetType;
+			packet >> packetType;
+			
+			switch(packetType)
+			{
+				case MOVEFORWARD:
+					unsigned int id;
+					packet >> id;
+					ships[id].isAccelarating = true;
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
 

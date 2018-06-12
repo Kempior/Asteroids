@@ -4,7 +4,8 @@
 enum PacketType
 {
 	PLAYERCOUNT,
-	START
+	START,
+	MOVEFORWARD
 };
 
 #endif //ASTEROIDS_PACKETTYPE_HPP
