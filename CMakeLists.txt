@@ -27,7 +27,7 @@ add_executable(Asteroids
         include/Asteroids/GameObjects/GameObject.hpp src/GameObjects/GameObject.cpp
         include/Asteroids/GameObjects/Asteroid.hpp src/GameObjects/Asteroid.cpp
         include/Asteroids/GameObjects/Ship.hpp src/GameObjects/Ship.cpp
-        )
+        include/Asteroids/GameObjects/Projectile.hpp src/GameObjects/Projectile.cpp)
 
 link_directories(lib)
 

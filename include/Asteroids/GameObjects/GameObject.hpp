@@ -25,6 +25,8 @@ public:
     void Draw(sf::RenderWindow &window);
     bool Collide(GameObject &other) const;
 	sf::Vector2f Forward() const;
+
+	void Constrain(sf::IntRect, float dt);
 };
 
 

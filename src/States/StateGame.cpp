@@ -112,6 +112,9 @@ void StateGame::handleEvent(const sf::Event& event)
 			case sf::Keyboard::D:
 				ships[playerID].isRotatingRight = false;
 				break;
+			case sf::Keyboard::Space:
+				ships[playerID].isShooting = false;
+				break;
 			default:
 				break;
 		}
@@ -124,60 +127,31 @@ void StateGame::update(float dt)
 		roid.position += roid.velocity * dt;
 		roid.rotation += roid.rotationSpeed * dt;
 
-		//Constraints on x axis
-		if (roid.position.x < worldSize.left) {
-			roid.velocity.x *= -1;
-			roid.position.x += roid.velocity.x * dt;
-		}
-		else if (worldSize.left + worldSize.width < roid.position.x) {
-			roid.velocity.x *= -1;
-			roid.position.x += roid.velocity.x * dt;
-		}
-		//Constraints on y axis
-		if (roid.position.y < worldSize.top) {
-			roid.velocity.y *= -1;
-			roid.position.y += roid.velocity.y * dt;
-		}
-		else if (worldSize.top + worldSize.height < roid.position.y) {
-			roid.velocity.y *= -1;
-			roid.position.y += roid.velocity.y * dt;
-		}
+		roid.Constrain(worldSize, dt);
 	}
 	for (auto &ship : ships) {
 		if (ship.isAccelerating) {
-			ships[playerID].velocity += ships[playerID].acceleration * ships[playerID].Forward();
+			ship.velocity += ship.acceleration * ship.Forward();
 		}
+
 		if (ship.isRotatingLeft && !ship.isRotatingRight) {
-			ships[playerID].rotationSpeed = -ships[playerID].rotationSteering;
+			ship.rotationSpeed = -ship.rotationSteering;
 		}
 		else if (!ship.isRotatingLeft && ship.isRotatingRight) {
-			ships[playerID].rotationSpeed = ships[playerID].rotationSteering;
+			ship.rotationSpeed = ship.rotationSteering;
 		}
 		else {
-			ships[playerID].rotationSpeed = 0.f;
+			ship.rotationSpeed = 0.f;
+		}
+
+		if (ship.isShooting) {
+
 		}
 
 		ship.position += ship.velocity * dt;
 		ship.rotation += ship.rotationSpeed * dt;
 
-		//Constraints on x axis
-		if (ship.position.x < worldSize.left) {
-			ship.velocity.x *= -1;
-			ship.position.x += ship.velocity.x * dt;
-		}
-		else if (worldSize.left + worldSize.width < ship.position.x) {
-			ship.velocity.x *= -1;
-			ship.position.x += ship.velocity.x * dt;
-		}
-		//Constraints on y axis
-		if (ship.position.y < worldSize.top) {
-			ship.velocity.y *= -1;
-			ship.position.y += ship.velocity.y * dt;
-		}
-		else if (worldSize.top + worldSize.height < ship.position.y) {
-			ship.velocity.y *= -1;
-			ship.position.y += ship.velocity.y * dt;
-		}
+		ship.Constrain(worldSize, dt);
 	}
 }
 

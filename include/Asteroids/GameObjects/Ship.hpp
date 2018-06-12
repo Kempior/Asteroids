@@ -11,6 +11,11 @@ public:
 	bool isAccelerating = false;
 	bool isRotatingRight = false;
 	bool isRotatingLeft = false;
+
+	bool isShooting = false;
+	float shotDelay = 0.5f;
+	float remainingDelay = 0.5f;
+
 	float acceleration = 10.f;
 	float rotationSteering = 220.f;
 };

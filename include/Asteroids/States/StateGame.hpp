@@ -2,8 +2,9 @@
 #define ASTEROIDS_STATEGAME_HPP
 
 #include "Asteroids/States/State.hpp"
-#include "Asteroids/GameObjects/Asteroid.hpp"
 #include "Asteroids/GameObjects/Ship.hpp"
+#include "Asteroids/GameObjects/Asteroid.hpp"
+#include "Asteroids/GameObjects/Projectile.hpp"
 
 class StateGame : public State
 {
@@ -13,6 +14,7 @@ class StateGame : public State
 
 	std::vector<Ship> ships;
 	std::vector<Asteroid> asteroids;
+	std::vector<Projectile> projectiles;
 
 	sf::Texture atlasTexture;
 
