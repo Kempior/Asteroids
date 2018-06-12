@@ -20,7 +20,9 @@ public:
 	float rotation = 180.f;
 	// In degrees per second
 	float rotationSpeed = 0.f;
-	float radius = 1.f;
+	float radius = 0.f;
+
+	bool isDestroyed = false;
 
     void Draw(sf::RenderWindow &window);
     bool Collide(GameObject &other) const;

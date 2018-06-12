@@ -21,12 +21,13 @@ StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::
 
 	clearColor = sf::Color::Black;
 
-	CreateAsteroids(20);
 	for (int i = 0; i < playerCount; ++i) {
 		CreateShip({worldSize.left + (worldSize.width / (float)(playerCount + 1)) * (i + 1), worldSize.top + worldSize.height * 0.75f});
 	}
 
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
+
+	CreateAsteroids(20);
 }
 
 StateGame::~StateGame()
@@ -38,9 +39,9 @@ StateGame::~StateGame()
 	}
 }
 
-void StateGame::CreateAsteroids(int howMany) {
+void StateGame::CreateAsteroids(int howMany, unsigned seed) {
 
-	std::mt19937 mt((unsigned)time(nullptr));
+	std::mt19937 mt(seed);
 	std::uniform_real_distribution<float> xPos(worldSize.left, worldSize.left + worldSize.width);
 	std::uniform_real_distribution<float> yPos(worldSize.top, worldSize.top + worldSize.height);
 
@@ -51,6 +52,15 @@ void StateGame::CreateAsteroids(int howMany) {
 
 	for (int i = 0; i < howMany; ++i) {
 		Asteroid newAst ({xPos(mt), yPos(mt)}, {spd(mt), spd(mt)});
+
+		// Rerolls if asteroid is spawning on a player
+		for (auto &ship : ships) {
+			if (newAst.Collide(ship)) {
+				i--;
+				continue;
+			}
+		}
+
 		newAst.sprite.setTextureRect({0, 0, 128, 128});
 		newAst.sprite.setOrigin(63, 63);
 
@@ -66,9 +76,9 @@ void StateGame::CreateAsteroids(int howMany) {
 	}
 }
 
-void StateGame::CreateAsteroids(int howMany, sf::Vector2f position) {
+void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, unsigned seed) {
 
-	std::mt19937 mt((unsigned)time(nullptr));
+	std::mt19937 mt(seed);
 
 	std::uniform_real_distribution<float> spd(-50, 50);
 	std::uniform_real_distribution<float> rot(0, 360.f);
@@ -183,6 +193,9 @@ void StateGame::handleEvent(const sf::Event& event)
 void StateGame::update(float dt)
 {
 	for (auto &roid : asteroids) {
+		if (roid.isDestroyed)
+			continue;
+
 		roid.position += roid.velocity * dt;
 		roid.rotation += roid.rotationSpeed * dt;
 
@@ -190,6 +203,9 @@ void StateGame::update(float dt)
 	}
 	
 	for (auto &ship : ships) {
+		if (ship.isDestroyed)
+			continue;
+
 		if (ship.isAccelerating) {
 			ship.velocity += ship.acceleration * ship.Forward();
 		}
@@ -227,9 +243,33 @@ void StateGame::update(float dt)
 	}
 
 	for (auto &boolet : projectiles) {
+
+		boolet.lifetime -= dt;
+		if (boolet.lifetime <= 0)
+
+
+		if(boolet.isDestroyed)
+			continue;
+
 		boolet.position += boolet.velocity * dt;
 		boolet.rotation += boolet.rotationSpeed * dt;
 	}
+
+	for (int i = 0; i < projectiles.size(); ++i) {
+		if (projectiles[i].isDestroyed)
+			continue;
+
+		for (int j = 0; j < asteroids.size(); ++j) {
+			if (asteroids[j].isDestroyed)
+				continue;
+
+			if (projectiles[i].Collide(asteroids[j])) {
+				projectiles.erase(projectiles.begin() + i);
+				asteroids.erase(asteroids.begin() + j);
+			}
+		}
+	}
+
 	
 	auto *ship = &ships[playerID];
 	sf::Packet packet;
