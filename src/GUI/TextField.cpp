@@ -55,7 +55,7 @@ void TextField::handleEvent(const sf::Event& event)
 	if(isSelected && event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Right)
 	{
 		isSelected = false;
-		textFieldRect.setOutlineThickness(0.0f);
+		textFieldRect.setOutlineColor(sf::Color::Black);
 		inputedText = oldText;
 		text->setText(inputedText);
 	}
@@ -63,7 +63,7 @@ void TextField::handleEvent(const sf::Event& event)
 	if(isSelected && event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Return)
 	{
 		isSelected = false;
-		textFieldRect.setOutlineThickness(0.0f);
+		textFieldRect.setOutlineColor(sf::Color::Black);
 		if(validateFunc && !validateFunc(inputedText))
 		{
 			inputedText = oldText;
