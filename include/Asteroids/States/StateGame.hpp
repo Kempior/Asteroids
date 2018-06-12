@@ -9,6 +9,7 @@
 #include "SFML/Network.hpp"
 
 #include <vector>
+#include <random>
 
 class StateGame : public State
 {
@@ -24,14 +25,16 @@ class StateGame : public State
 	std::vector<Projectile> projectiles;
 
 	sf::Texture atlasTexture;
+	
+	std::mt19937 mt;
 
 public:
 	//Yes, I'm lazy;
-	explicit StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
+	StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 	~StateGame() override;
 
-	void CreateAsteroids(int howMany, unsigned seed = (unsigned)time(nullptr));
-	void CreateAsteroids(int howMany, sf::Vector2f position, float scale = 1.f, unsigned seed = (unsigned)time(nullptr));
+	void CreateAsteroids(int howMany);
+	void CreateAsteroids(int howMany, sf::Vector2f position, float scale = 1.f);
 
 	void CreateShip(sf::Vector2f position, float scale = 1.f);
 

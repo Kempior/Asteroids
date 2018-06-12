@@ -6,6 +6,8 @@
 
 #include "SFML/Network.hpp"
 
+#include <ctime>
+
 StateGameLobby::StateGameLobby(bool isHost):
 isHost(isHost)
 {
@@ -36,15 +38,17 @@ isHost(isHost)
 			
 			unsigned int id = 1;
 			
+			unsigned int seed = static_cast<unsigned int>(time(0));
+			
 			for(auto client : clients)
 			{
 				sf::Packet packet;
-				packet << PacketType::START << id++;
+				packet << PacketType::START << id++ << seed;
 				
 				while(client->send(packet) != sf::Socket::Done) {}
 			}
 			
-			currentState.state = new StateGame(playerCount, 0, nullptr, std::move(clients));
+			currentState.state = new StateGame(playerCount, 0, seed, nullptr, std::move(clients));
 			currentState.destroyLast = true;
 		});
 	}
@@ -116,9 +120,9 @@ void StateGameLobby::update(float dt)
 				}
 				case START:
 				{
-					unsigned int id;
-					packet >> id;
-					currentState.state = new StateGame(playerCount, id, server, std::move(clients));
+					unsigned int id, seed;
+					packet >> id >> seed;
+					currentState.state = new StateGame(playerCount, id, seed, server, std::move(clients));
 					currentState.destroyLast = true;
 					server = nullptr;
 					break;
