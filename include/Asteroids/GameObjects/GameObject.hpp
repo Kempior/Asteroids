@@ -16,7 +16,9 @@ public:
 
     sf::Vector2f position;
     sf::Vector2f velocity;
+    // In degrees
 	float rotation = 180.f;
+	// In degrees per second
 	float rotationSpeed = 0.f;
 	float radius = 1.f;
 

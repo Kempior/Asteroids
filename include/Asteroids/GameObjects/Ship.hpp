@@ -8,8 +8,11 @@ public:
 	explicit Ship(sf::Vector2f position = sf::Vector2f(), sf::Vector2f velocity = sf::Vector2f(), float rotation = 180.f, float rotationSpeed = 0.f)
 			: GameObject(position, velocity, rotation, rotationSpeed) {}
 
-	bool isAccelarating = false;
-	float accelaration = 50.f;
+	bool isAccelerating = false;
+	bool isRotatingRight = false;
+	bool isRotatingLeft = false;
+	float acceleration = 10.f;
+	float rotationSteering = 220.f;
 };
 
 
