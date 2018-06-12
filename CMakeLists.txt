@@ -24,6 +24,9 @@ add_executable(Asteroids
         include/Asteroids/ServiceLocator/DefaultResourceFont.hpp src/ServiceLocator/DefaultResourceFont.cpp
         include/Asteroids/ServiceLocator/Locator.hpp src/ServiceLocator/Locator.cpp
         include/Asteroids/Networking/PacketType.hpp
+        include/Asteroids/GameObjects/GameObject.hpp src/GameObjects/GameObject.cpp
+        include/Asteroids/GameObjects/Asteroid.hpp src/GameObjects/Asteroid.cpp
+        include/Asteroids/GameObjects/Ship.hpp src/GameObjects/Ship.cpp
         )
 
 link_directories(lib)
