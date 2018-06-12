@@ -41,11 +41,16 @@ void StateGame::CreateAsteroids(int howMany, unsigned seed) {
 		Asteroid newAst ({xPos(mt), yPos(mt)}, {spd(mt), spd(mt)});
 
 		// Rerolls if asteroid is spawning on a player
+		bool reroll = false;
 		for (auto &ship : ships) {
-			if (newAst.Collide(ship)) {
-				i--;
-				continue;
+			if (newAst.Collide(ship, 200.f)) {
+				reroll = true;
+				break;
 			}
+		}
+		if (reroll) {
+			i--;
+			continue;
 		}
 
 		newAst.sprite.setTextureRect({0, 0, 128, 128});
@@ -211,10 +216,7 @@ void StateGame::update(float dt)
 	for (auto &boolet : projectiles) {
 
 		boolet.lifetime -= dt;
-		if (boolet.lifetime <= 0)
-
-
-		if(boolet.isDestroyed)
+		if (boolet.lifetime <= 0 || boolet.isDestroyed)
 			continue;
 
 		boolet.position += boolet.velocity * dt;
@@ -222,16 +224,21 @@ void StateGame::update(float dt)
 	}
 
 	for (int i = 0; i < projectiles.size(); ++i) {
-		if (projectiles[i].isDestroyed)
-			continue;
-
 		for (int j = 0; j < asteroids.size(); ++j) {
-			if (asteroids[j].isDestroyed)
-				continue;
-
 			if (projectiles[i].Collide(asteroids[j])) {
 				projectiles.erase(projectiles.begin() + i);
 				asteroids.erase(asteroids.begin() + j);
+			}
+		}
+	}
+
+	for (auto &asteroid : asteroids) {
+		for (auto &ship : ships) {
+			if (ship.isDestroyed)
+				continue;
+
+			if (asteroid.Collide(ship)) {
+				ship.isDestroyed = true;
 			}
 		}
 	}

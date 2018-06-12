@@ -10,10 +10,10 @@ void GameObject::Draw(sf::RenderWindow &window) {
 	window.draw(sprite);
 }
 
-bool GameObject::Collide(GameObject &other) const {
+bool GameObject::Collide(GameObject &other, float padding) const {
 	sf::Vector2f diff = position - other.position;
 
-	return sqrtf(diff.x * diff.x + diff.y * diff.y) <= radius + other.radius;
+	return sqrtf(diff.x * diff.x + diff.y * diff.y) <= radius + other.radius + padding;
 }
 
 sf::Vector2f GameObject::Forward() const {

@@ -25,7 +25,7 @@ public:
 	bool isDestroyed = false;
 
     void Draw(sf::RenderWindow &window);
-    bool Collide(GameObject &other) const;
+    bool Collide(GameObject &other, float padding = 0.f) const;
 	sf::Vector2f Forward() const;
 
 	void Constrain(sf::IntRect, float dt);
