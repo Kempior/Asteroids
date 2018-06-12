@@ -1,6 +1,7 @@
 #include "Asteroids/Application.hpp"
 
 #include "Asteroids/States/StateGame.hpp"
+#include "Asteroids/GUI/Widget.hpp"
 
 #include <chrono>
 #include <thread>
@@ -8,6 +9,8 @@
 Application::Application()
 {
 	window.create(sf::VideoMode(1600, 900), "Asteroids");
+	
+	Widget::initGUI(window);
 	
 	currentState = new StateGame();
 	State::currentState.state = currentState;
@@ -20,7 +23,7 @@ void Application::run()
 	
 	while(window.isOpen() && currentState)
 	{
-		sf::Event event;
+		sf::Event event{};
 		while(window.pollEvent(event))
 		{
 			currentState->handleEvent(event);

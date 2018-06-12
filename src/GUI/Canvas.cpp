@@ -1,8 +1,8 @@
 #include "Asteroids/GUI/Canvas.hpp"
 
-Canvas::Canvas(sf::RenderWindow& window): Widget("Canvas")
+Canvas::Canvas(): Widget("Canvas")
 {
-	windowSize = window.getSize();
+
 }
 
 void Canvas::handleEvent(const sf::Event& event)

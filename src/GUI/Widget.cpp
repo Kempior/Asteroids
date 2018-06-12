@@ -17,6 +17,11 @@ Widget::~Widget()
 	}
 }
 
+void Widget::initGUI(sf::RenderWindow& window)
+{
+	windowSize = window.getSize();
+}
+
 void Widget::handleEvent(const sf::Event& event)
 {
 	for(auto widget : childWidgets)

@@ -6,7 +6,7 @@
 class Canvas : public Widget
 {
 public:
-	explicit Canvas(sf::RenderWindow& window);
+	Canvas();
 
 	void handleEvent(const sf::Event& event) override;
 	void update(float dt) override;
