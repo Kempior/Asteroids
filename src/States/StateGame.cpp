@@ -275,7 +275,7 @@ void StateGame::update(float dt)
 			ships[playerID].isDestroyed = true;
 			
 			sf::Packet packet;
-			packet << PacketType::DISCONNECT << playerID;
+			packet << PacketType::SHIPDESTROYED << playerID;
 			sendPacket(packet);
 		}
 	}
