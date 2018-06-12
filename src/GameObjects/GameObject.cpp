@@ -1,6 +1,9 @@
 #include "Asteroids/GameObjects/GameObject.hpp"
 
 void GameObject::Draw(sf::RenderWindow &window) {
+	if (isDestroyed)
+		return;
+
 	sprite.setPosition(position);
 	sprite.setRotation(rotation + 180.f);
 

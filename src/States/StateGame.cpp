@@ -23,7 +23,7 @@ StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::
 
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 
-	CreateAsteroids(1);
+	CreateAsteroids(20);
 }
 
 void StateGame::CreateAsteroids(int howMany, unsigned seed) {
@@ -221,7 +221,7 @@ void StateGame::update(float dt)
 		boolet.rotation += boolet.rotationSpeed * dt;
 	}
 
-	/*for (int i = 0; i < projectiles.size(); ++i) {
+	for (int i = 0; i < projectiles.size(); ++i) {
 		if (projectiles[i].isDestroyed)
 			continue;
 
@@ -229,13 +229,12 @@ void StateGame::update(float dt)
 			if (asteroids[j].isDestroyed)
 				continue;
 
-			if (asteroids[i].Collide(projectiles[j])) {
+			if (projectiles[i].Collide(asteroids[j])) {
 				projectiles.erase(projectiles.begin() + i);
-				asteroids.erase(asteroids.begin() + i);
+				asteroids.erase(asteroids.begin() + j);
 			}
 		}
-	}*/
-
+	}
 
 	
 	auto *ship = &ships[playerID];
