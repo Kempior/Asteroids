@@ -10,7 +10,7 @@
 #include <thread>
 #include <chrono>
 
-StateGame::StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID), mt(seed) {
+StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID), mt(time(0)) {
 
 	isHost = !playerID;
 	
@@ -27,7 +27,10 @@ StateGame::StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSo
 
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 
-	CreateAsteroids(10);
+	if(isHost)
+	{
+		CreateAsteroids(10);
+	}
 }
 
 StateGame::~StateGame()
@@ -80,6 +83,10 @@ void StateGame::CreateAsteroids(int howMany) {
 			continue;
 		}
 
+		sf::Packet packet;
+		packet << PacketType::CREATEASTEROID << newAst.position.x << newAst.position.y << newAst.velocity.x << newAst.velocity.y << newAst.rotation << newAst.rotationSpeed;
+		sendPacket(packet);
+		
 		asteroids.push_back(newAst);
 	}
 }
@@ -267,7 +274,10 @@ void StateGame::update(float dt)
 
 	if (asteroids.empty()) {
 		wave++;
-		CreateAsteroids(10 * wave);
+		if(isHost)
+		{
+			CreateAsteroids(10 * wave);
+		}
 	}
 
 	// Collisions between player and asteroids
@@ -430,6 +440,15 @@ void StateGame::recivePackets()
 					
 					ships[id].isDestroyed = true;
 					
+					break;
+				}
+				case CREATEASTEROID:
+				{
+					sf::Vector2f position;
+					sf::Vector2f velocity;
+					float rot, rotSpeed;
+					packet >> position.x >> position.y >> velocity.x >> velocity.y >> rot >> rotSpeed;
+					asteroids.push_back(CreateAsteroid(position, velocity, rot, rotSpeed, 1));
 					break;
 				}
 				default:

@@ -31,7 +31,7 @@ class StateGame : public State
 
 public:
 	//Yes, I'm lazy;
-	StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
+	StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 	~StateGame() override;
 
 	Asteroid CreateAsteroid(sf::Vector2f position, sf::Vector2f velocity, float rotation, float rotationSpeed, float scale);
