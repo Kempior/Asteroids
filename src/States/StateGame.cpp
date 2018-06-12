@@ -276,6 +276,10 @@ void StateGame::update(float dt)
 	for (auto &asteroid : asteroids) {
 		if (!ships[playerID].isDestroyed && ships[playerID].Collide(asteroid)) {
 			ships[playerID].isDestroyed = true;
+			
+			sf::Packet packet;
+			packet << PacketType::DISCONNECT << playerID;
+			sendPacket(packet);
 		}
 	}
 
@@ -364,6 +368,19 @@ void StateGame::recivePackets()
 						repacket << PacketType::PROJECTILESPAWN << position.x << position.y << velocity.x << velocity.y << lifetime;
 						sendPacket(repacket, client);
 					}
+					case SHIPDESTROYED:
+					{
+						unsigned int id;
+						packet >> id;
+						
+						ships[id].isDestroyed = true;
+						
+						sf::Packet repacket;
+						repacket << PacketType::SHIPDESTROYED << id;
+						sendPacket(repacket, client);
+						
+						break;
+					}
 					default:
 						break;
 				}
@@ -405,6 +422,15 @@ void StateGame::recivePackets()
 					
 					packet >> position.x >> position.y >> velocity.x >> velocity.y >> lifetime;
 					CreateProjectile(position, velocity, lifetime);
+				}
+				case SHIPDESTROYED:
+				{
+					unsigned int id;
+					packet >> id;
+					
+					ships[id].isDestroyed = true;
+					
+					break;
 				}
 				default:
 					break;
