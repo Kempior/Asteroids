@@ -27,7 +27,7 @@ StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::
 
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 
-	CreateAsteroids(20);
+	CreateAsteroids(20, 0);
 }
 
 StateGame::~StateGame()
@@ -423,6 +423,7 @@ void StateGame::recivePackets()
 					
 					packet >> position.x >> position.y >> velocity.x >> velocity.y >> lifetime;
 					CreateProjectile(position, velocity, lifetime);
+					break;
 				}
 				case SHIPDESTROYED:
 				{
