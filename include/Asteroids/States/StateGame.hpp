@@ -33,6 +33,7 @@ public:
 	StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 	~StateGame() override;
 
+	Asteroid CreateAsteroid(sf::Vector2f position, sf::Vector2f velocity, float rotation, float rotationSpeed, float scale);
 	void CreateAsteroids(int howMany);
 	void CreateAsteroids(int howMany, sf::Vector2f position, float scale = 1.f);
 

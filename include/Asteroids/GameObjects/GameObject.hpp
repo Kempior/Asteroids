@@ -22,6 +22,8 @@ public:
 	float rotationSpeed = 0.f;
 	float radius = 0.f;
 
+	//float scale = 1;
+
 	bool isDestroyed = false;
 
     void Draw(sf::RenderWindow &window);

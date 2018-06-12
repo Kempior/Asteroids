@@ -39,6 +39,21 @@ StateGame::~StateGame()
 	}
 }
 
+Asteroid StateGame::CreateAsteroid(sf::Vector2f position, sf::Vector2f velocity, float rotation, float rotationSpeed, float scale) {
+
+	Asteroid newAst(position, velocity, rotation, rotationSpeed);
+
+	newAst.sprite.setTextureRect({0, 0, 128, 128});
+	newAst.sprite.setOrigin(63, 63);
+
+	newAst.sprite.setTexture(atlasTexture);
+
+	newAst.sprite.scale({scale * 1.f, scale * 1.f});
+	newAst.radius = scale * 64;
+
+	return newAst;
+}
+
 void StateGame::CreateAsteroids(int howMany) {
 	
 	std::uniform_real_distribution<float> xPos(worldSize.left, worldSize.left + worldSize.width);
@@ -50,9 +65,9 @@ void StateGame::CreateAsteroids(int howMany) {
 	std::uniform_real_distribution<float> rotSpd(-30.f, 30.f);
 
 	for (int i = 0; i < howMany; ++i) {
-		Asteroid newAst ({xPos(mt), yPos(mt)}, {spd(mt), spd(mt)});
+		Asteroid newAst = CreateAsteroid({xPos(mt), yPos(mt)}, {spd(mt), spd(mt)}, rot(mt), rotSpd(mt), 1);
 
-		// Rerolls if asteroid is spawning on a player
+		// Rerolls if asteroid is spawning on or near a player
 		bool reroll = false;
 		for (auto &ship : ships) {
 			if (newAst.Collide(ship, 200.f)) {
@@ -64,17 +79,6 @@ void StateGame::CreateAsteroids(int howMany) {
 			i--;
 			continue;
 		}
-
-		newAst.sprite.setTextureRect({0, 0, 128, 128});
-		newAst.sprite.setOrigin(63, 63);
-
-		newAst.rotation = rot(mt);
-		newAst.rotationSpeed = rotSpd(mt);
-
-		newAst.sprite.setTexture(atlasTexture);
-
-		newAst.sprite.scale({1.f, 1.f});
-		newAst.radius = 64;
 
 		asteroids.push_back(newAst);
 	}
@@ -88,18 +92,18 @@ void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, float scale)
 	std::uniform_real_distribution<float> rotSpd(-30.f, 30.f);
 
 	for (int i = 0; i < howMany; ++i) {
-		Asteroid newAst (position);
+		Asteroid newAst (position, {spd(mt), spd(mt)});
 
 		newAst.sprite.setTextureRect({0, 0, 128, 128});
 		newAst.sprite.setOrigin(63, 63);
-
-		newAst.sprite.setScale({scale, scale});
-		newAst.radius = scale * 1;
 
 		newAst.rotation = rot(mt);
 		newAst.rotationSpeed = rotSpd(mt);
 
 		newAst.sprite.setTexture(atlasTexture);
+
+		newAst.sprite.scale({1.f, 1.f});
+		newAst.radius = scale * 64;
 
 		asteroids.push_back(newAst);
 	}
@@ -247,6 +251,7 @@ void StateGame::update(float dt)
 		ship.remainingDelay -= dt;
 	}
 
+	// Erases projectiles after their lifetime expires
 	for (int i = 0; i < projectiles.size(); i++) {
 
 		projectiles[i].lifetime -= dt;
@@ -261,15 +266,18 @@ void StateGame::update(float dt)
 		projectiles[i].rotation += projectiles[i].rotationSpeed * dt;
 	}
 
+	// Collisions between projectiles and asteroids
 	for (int i = 0; i < projectiles.size(); ++i) {
 		for (int j = 0; j < asteroids.size(); ++j) {
 			if (projectiles[i].Collide(asteroids[j])) {
+				//CreateAsteroids(2, asteroids[j].position, asteroids[j].sprite.getScale().x / 2);
+
 				projectiles.erase(projectiles.begin() + i);
 				asteroids.erase(asteroids.begin() + j);
 			}
 		}
 	}
-
+	// Collisions between player and asteroids
 	for (auto &asteroid : asteroids) {
 		if (!ships[playerID].isDestroyed && ships[playerID].Collide(asteroid)) {
 			ships[playerID].isDestroyed = true;
@@ -437,4 +445,5 @@ void StateGame::recivePackets()
 		}
 	}
 }
+
 
