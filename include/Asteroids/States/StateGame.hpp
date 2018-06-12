@@ -6,9 +6,16 @@
 #include "Asteroids/GameObjects/Asteroid.hpp"
 #include "Asteroids/GameObjects/Projectile.hpp"
 
+#include "SFML/Network.hpp"
+
+#include <vector>
+
 class StateGame : public State
 {
 	const int playerID;
+	bool isHost;
+	sf::TcpSocket *server;
+	std::vector<sf::TcpSocket*> clients;
 
 	const sf::IntRect worldSize;
 
@@ -20,7 +27,7 @@ class StateGame : public State
 
 public:
 	//Yes, I'm lazy;
-	explicit StateGame(int playerCount, int playerID, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
+	explicit StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
 
 	void CreateAsteroids(int howMany);
 	void CreateAsteroids(int howMany, sf::Vector2f position);
@@ -30,6 +37,10 @@ public:
 	void handleEvent(const sf::Event& event) override;
 	void update(float dt) override;
 	void draw(sf::RenderWindow& window) override;
+
+private:
+	void sendPacket(sf::Packet& packet);
+	void recivePackets();
 };
 
 #endif //ASTEROIDS_STATEGAME_HPP

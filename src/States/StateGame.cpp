@@ -1,12 +1,18 @@
 #include <random>
 #include <ctime>
-
+#include <utility>
 #include "SFML/Window.hpp"
 
 #include "Asteroids/States/StateGame.hpp"
+#include "Asteroids/Networking/PacketType.hpp"
 
-StateGame::StateGame(int playerCount, int playerID, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
+StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
 
+	isHost = !playerID;
+	
+	this->server = server;
+	this->clients = std::move(clients);
+	
 	atlasTexture.loadFromFile("../../assets/Atlas.png");
 
 	clearColor = sf::Color::Black;
@@ -129,6 +135,7 @@ void StateGame::update(float dt)
 
 		roid.Constrain(worldSize, dt);
 	}
+	
 	for (auto &ship : ships) {
 		if (ship.isAccelerating) {
 			ship.velocity += ship.acceleration * ship.Forward();
@@ -153,6 +160,13 @@ void StateGame::update(float dt)
 
 		ship.Constrain(worldSize, dt);
 	}
+	
+	auto *ship = &ships[playerID];
+	sf::Packet packet;
+	packet << PacketType::TRANSFORM << playerID << ship->position.x << ship->position.y << ship->velocity.x << ship->velocity.y << ship->rotation << ship->rotationSpeed;
+	sendPacket(packet);
+	
+	recivePackets();
 }
 
 void StateGame::draw(sf::RenderWindow& window)
@@ -162,6 +176,83 @@ void StateGame::draw(sf::RenderWindow& window)
 	}
 	for (auto &ship : ships) {
 		ship.Draw(window);
+	}
+}
+
+void StateGame::sendPacket(sf::Packet &packet)
+{
+	if(isHost)
+	{
+		for(auto client : clients)
+		{
+			while(client->send(packet) != sf::Socket::Done) {}
+		}
+	}
+	else
+	{
+		while(server->send(packet) != sf::Socket::Done) {}
+	}
+}
+
+void StateGame::recivePackets()
+{
+	if(isHost) //Host
+	{
+		for(auto client : clients)
+		{
+			sf::Packet packet;
+			while(client->receive(packet) == sf::Socket::Done)
+			{
+				int packetType;
+				packet >> packetType;
+				
+				switch(packetType)
+				{
+					case TRANSFORM:
+					{
+						unsigned int id;
+						packet >> id;
+						
+						auto *ship = &ships[id];
+						packet >> ship->position.x >> ship->position.y >> ship->velocity.x >> ship->velocity.y >> ship->rotation >> ship->rotationSpeed;
+						
+						sf::Packet repacket;
+						repacket << packetType << id << ship->position.x << ship->position.y << ship->velocity.x << ship->velocity.y << ship->rotation << ship->rotationSpeed;
+						sendPacket(repacket);
+						
+						break;
+					}
+					default:
+						break;
+				}
+			}
+		}
+	}
+	else //Client
+	{
+		sf::Packet packet;
+		while(server->receive(packet) == sf::Socket::Done)
+		{
+			int packetType;
+			packet >> packetType;
+			
+			switch(packetType)
+			{
+				case TRANSFORM:
+				{
+					unsigned int id;
+					packet >> id;
+					if(id != playerID)
+					{
+						auto *ship = &ships[id];
+						packet >> ship->position.x >> ship->position.y >> ship->velocity.x >> ship->velocity.y >> ship->rotation >> ship->rotationSpeed;
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		}
 	}
 }
 
