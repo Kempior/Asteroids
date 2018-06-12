@@ -10,6 +10,7 @@ add_executable(Asteroids
         include/Asteroids/Application.hpp src/Application.cpp
         include/Asteroids/States/State.hpp src/States/State.cpp
         include/Asteroids/States/StateGame.hpp src/States/StateGame.cpp
+        include/Asteroids/States/StateMainMenu.hpp src/States/StateMainMenu.cpp
         include/Asteroids/GUI/Box.hpp src/GUI/Box.cpp
         include/Asteroids/GUI/Button.hpp src/GUI/Button.cpp
         include/Asteroids/GUI/Canvas.hpp src/GUI/Canvas.cpp

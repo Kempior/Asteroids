@@ -1,8 +1,8 @@
 #include "Asteroids/GUI/Canvas.hpp"
 
-Canvas::Canvas(sf::RenderWindow& window): Widget("Canvas")
+Canvas::Canvas(): Widget("Canvas")
 {
-	windowSize = window.getSize();
+
 }
 
 void Canvas::handleEvent(const sf::Event& event)
@@ -39,6 +39,11 @@ sf::Vector2f Canvas::getPosition()
 sf::Vector2f Canvas::getSize()
 {
 	return sf::Vector2f(windowSize);
+}
+
+void Canvas::setPosition(sf::Vector2f position)
+{
+	//Canvas has no position
 }
 
 void Canvas::recalculateSize()

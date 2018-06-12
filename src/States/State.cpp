@@ -2,12 +2,17 @@
 
 ReturnState State::currentState;
 
-State::State()
+void State::handleEvent(const sf::Event& event)
 {
-
+	canvas.handleEvent(event);
 }
 
-State::~State()
+void State::update(float dt)
 {
+	canvas.update(dt);
+}
 
+void State::draw(sf::RenderWindow& window)
+{
+	canvas.draw(window);
 }

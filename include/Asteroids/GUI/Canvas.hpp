@@ -6,7 +6,7 @@
 class Canvas : public Widget
 {
 public:
-	explicit Canvas(sf::RenderWindow& window);
+	Canvas();
 
 	void handleEvent(const sf::Event& event) override;
 	void update(float dt) override;
@@ -14,7 +14,7 @@ public:
 	
 	sf::Vector2f getPosition() override;
 	sf::Vector2f getSize() override;
-	void setPosition(sf::Vector2f position) override = 0;
+	void setPosition(sf::Vector2f position) override;
 	
 	void recalculateSize() override;
 };
