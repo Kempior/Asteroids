@@ -49,6 +49,7 @@ isHost(isHost)
 			}
 			
 			currentState.state = new StateGame(playerCount, 0, seed, nullptr, std::move(clients));
+
 			currentState.destroyLast = true;
 		});
 	}
