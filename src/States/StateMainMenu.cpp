@@ -1,6 +1,8 @@
 #include "Asteroids/States/StateMainMenu.hpp"
 
 #include "Asteroids/GUI/Widgets.hpp"
+#include "Asteroids/States/StateGameLobby.hpp"
+#include "Asteroids/States/StateJoinLobby.hpp"
 
 #include <iostream>
 
@@ -17,7 +19,8 @@ StateMainMenu::StateMainMenu()
 	
 	button->setFunc([this]()
 	{
-	
+		currentState.state = new StateGameLobby(true);
+		currentState.destroyLast = true;
 	});
 	
 	//Join Game Button
@@ -31,7 +34,8 @@ StateMainMenu::StateMainMenu()
 	
 	button->setFunc([this]()
 	{
-	
+		currentState.state = new StateJoinLobby();
+		currentState.destroyLast = true;
 	});
 	
 	//Exit Game Button

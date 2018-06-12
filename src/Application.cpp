@@ -16,8 +16,8 @@ Application::Application()
 	Widget::initGUI(window);
 	Locator::provideFont(new DefaultResourceFont());
 	
-	currentState = new StateGame();
-	//currentState = new StateMainMenu();
+	//currentState = new StateGame();
+	currentState = new StateMainMenu();
 	State::currentState.state = currentState;
 }
 
@@ -41,11 +41,11 @@ void Application::run()
 		
 		currentState->update(clock.restart().asSeconds());
 		
+		window.clear(currentState->clearColor);
+		
 		currentState->draw(window);
 		
 		window.display();
-		
-		window.clear(currentState->clearColor);
 		
 		if(State::currentState.destroyLast)
 		{

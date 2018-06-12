@@ -11,6 +11,8 @@ add_executable(Asteroids
         include/Asteroids/States/State.hpp src/States/State.cpp
         include/Asteroids/States/StateGame.hpp src/States/StateGame.cpp
         include/Asteroids/States/StateMainMenu.hpp src/States/StateMainMenu.cpp
+        include/Asteroids/States/StateGameLobby.hpp src/States/StateGameLobby.cpp
+        include/Asteroids/States/StateJoinLobby.hpp src/States/StateJoinLobby.cpp
         include/Asteroids/GUI/Box.hpp src/GUI/Box.cpp
         include/Asteroids/GUI/Button.hpp src/GUI/Button.cpp
         include/Asteroids/GUI/Canvas.hpp src/GUI/Canvas.cpp
@@ -21,6 +23,7 @@ add_executable(Asteroids
         include/Asteroids/ServiceLocator/ResourceFont.hpp
         include/Asteroids/ServiceLocator/DefaultResourceFont.hpp src/ServiceLocator/DefaultResourceFont.cpp
         include/Asteroids/ServiceLocator/Locator.hpp src/ServiceLocator/Locator.cpp
+        include/Asteroids/Networking/PacketType.hpp
         include/Asteroids/GameObjects/GameObject.hpp src/GameObjects/GameObject.cpp
         include/Asteroids/GameObjects/Asteroid.hpp src/GameObjects/Asteroid.cpp
         include/Asteroids/GameObjects/Ship.hpp src/GameObjects/Ship.cpp
