@@ -81,7 +81,7 @@ void StateGame::CreateAsteroids(int howMany, unsigned seed) {
 	}
 }
 
-void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, unsigned seed) {
+void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, float scale, unsigned seed) {
 
 	std::mt19937 mt(seed);
 
@@ -96,6 +96,9 @@ void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, unsigned see
 		newAst.sprite.setTextureRect({0, 0, 128, 128});
 		newAst.sprite.setOrigin(63, 63);
 
+		newAst.sprite.setScale({scale, scale});
+		newAst.radius = scale * 1;
+
 		newAst.rotation = rot(mt);
 		newAst.rotationSpeed = rotSpd(mt);
 
@@ -105,7 +108,7 @@ void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, unsigned see
 	}
 }
 
-void StateGame::CreateShip(sf::Vector2f position) {
+void StateGame::CreateShip(sf::Vector2f position, float scale) {
 
 	Ship newShip(position);
 
@@ -114,7 +117,7 @@ void StateGame::CreateShip(sf::Vector2f position) {
 
 	newShip.sprite.setTexture(atlasTexture);
 
-	newShip.sprite.scale({0.5, 0.5});
+	newShip.sprite.scale({0.5f * scale, 0.5f * scale});
 	newShip.radius = 32;
 
 	ships.push_back(newShip);
@@ -271,7 +274,7 @@ void StateGame::update(float dt)
 	}
 
 	for (auto &asteroid : asteroids) {
-		if (ships[playerID].Collide(asteroid)) {
+		if (!ships[playerID].isDestroyed && ships[playerID].Collide(asteroid)) {
 			ships[playerID].isDestroyed = true;
 		}
 	}

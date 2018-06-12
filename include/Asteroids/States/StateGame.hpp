@@ -31,9 +31,9 @@ public:
 	~StateGame() override;
 
 	void CreateAsteroids(int howMany, unsigned seed = (unsigned)time(nullptr));
-	void CreateAsteroids(int howMany, sf::Vector2f position, unsigned seed = (unsigned)time(nullptr));
+	void CreateAsteroids(int howMany, sf::Vector2f position, float scale = 1.f, unsigned seed = (unsigned)time(nullptr));
 
-	void CreateShip(sf::Vector2f position);
+	void CreateShip(sf::Vector2f position, float scale = 1.f);
 
 	void CreateProjectile(sf::Vector2f position, sf::Vector2f velocity, float lifetime);
 
