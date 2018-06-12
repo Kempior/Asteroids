@@ -5,6 +5,10 @@
 
 #include "Asteroids/States/StateGame.hpp"
 #include "Asteroids/Networking/PacketType.hpp"
+#include "Asteroids/States/StateMainMenu.hpp"
+
+#include <thread>
+#include <chrono>
 
 StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
 
@@ -24,6 +28,15 @@ StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 
 	CreateAsteroids(20);
+}
+
+StateGame::~StateGame()
+{
+	delete server;
+	for(auto client : clients)
+	{
+		delete client;
+	}
 }
 
 void StateGame::CreateAsteroids(int howMany, unsigned seed) {
@@ -123,6 +136,27 @@ void StateGame::CreateProjectile(sf::Vector2f position, sf::Vector2f velocity, f
 
 void StateGame::handleEvent(const sf::Event& event)
 {
+	if(event.type == sf::Event::Closed)
+	{
+		sf::Packet packet;
+		packet << PacketType::DISCONNECT;
+		sendPacket(packet);
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		
+		if(isHost)
+		{
+			for(auto client : clients)
+			{
+				client->disconnect();
+			}
+		}
+		else
+		{
+			server->disconnect();
+		}
+	}
+	
 	if (event.type == sf::Event::KeyPressed) {
 		switch (event.key.code) {
 			case sf::Keyboard::W:
@@ -272,12 +306,12 @@ void StateGame::sendPacket(sf::Packet &packet, sf::TcpSocket* exclude)
 		for(auto client : clients)
 		{
 			if(client == exclude) continue;
-			while(client->send(packet) != sf::Socket::Done) {}
+			while(client->send(packet) == sf::Socket::Partial) {}
 		}
 	}
 	else
 	{
-		while(server->send(packet) != sf::Socket::Done) {}
+		while(server->send(packet) == sf::Socket::Partial) {}
 	}
 }
 
@@ -295,6 +329,12 @@ void StateGame::recivePackets()
 				
 				switch(packetType)
 				{
+					case DISCONNECT:
+					{
+						client->disconnect();
+						
+						break;
+					}
 					case TRANSFORM:
 					{
 						unsigned int id;
@@ -338,6 +378,15 @@ void StateGame::recivePackets()
 			
 			switch(packetType)
 			{
+				case DISCONNECT:
+				{
+					server->disconnect();
+					
+					currentState.state = new StateMainMenu();
+					currentState.destroyLast = true;
+					
+					break;
+				}
 				case TRANSFORM:
 				{
 					unsigned int id;
