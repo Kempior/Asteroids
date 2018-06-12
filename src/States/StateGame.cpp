@@ -367,6 +367,7 @@ void StateGame::recivePackets()
 						sf::Packet repacket;
 						repacket << PacketType::PROJECTILESPAWN << position.x << position.y << velocity.x << velocity.y << lifetime;
 						sendPacket(repacket, client);
+						break;
 					}
 					case SHIPDESTROYED:
 					{
