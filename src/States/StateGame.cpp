@@ -247,14 +247,18 @@ void StateGame::update(float dt)
 		ship.remainingDelay -= dt;
 	}
 
-	for (auto &boolet : projectiles) {
+	for (int i = 0; i < projectiles.size(); i++) {
 
-		boolet.lifetime -= dt;
-		if (boolet.lifetime <= 0 || boolet.isDestroyed)
+		projectiles[i].lifetime -= dt;
+
+		if (projectiles[i].lifetime <= 0)
+			projectiles.erase(projectiles.begin() + i);
+
+		if (projectiles[i].isDestroyed)
 			continue;
 
-		boolet.position += boolet.velocity * dt;
-		boolet.rotation += boolet.rotationSpeed * dt;
+		projectiles[i].position += projectiles[i].velocity * dt;
+		projectiles[i].rotation += projectiles[i].rotationSpeed * dt;
 	}
 
 	for (int i = 0; i < projectiles.size(); ++i) {
@@ -267,13 +271,8 @@ void StateGame::update(float dt)
 	}
 
 	for (auto &asteroid : asteroids) {
-		for (auto &ship : ships) {
-			if (ship.isDestroyed)
-				continue;
-
-			if (asteroid.Collide(ship)) {
-				ship.isDestroyed = true;
-			}
+		if (ships[playerID].Collide(asteroid)) {
+			ships[playerID].isDestroyed = true;
 		}
 	}
 
