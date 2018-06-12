@@ -1,7 +1,10 @@
 #include "Asteroids/Application.hpp"
 
 #include "Asteroids/States/StateGame.hpp"
+#include "Asteroids/States/StateMainMenu.hpp"
 #include "Asteroids/GUI/Widget.hpp"
+#include "Asteroids/ServiceLocator/Locator.hpp"
+#include "Asteroids/ServiceLocator/DefaultResourceFont.hpp"
 
 #include <chrono>
 #include <thread>
@@ -11,8 +14,10 @@ Application::Application()
 	window.create(sf::VideoMode(1600, 900), "Asteroids");
 	
 	Widget::initGUI(window);
+	Locator::provideFont(new DefaultResourceFont());
 	
 	currentState = new StateGame();
+	//currentState = new StateMainMenu();
 	State::currentState.state = currentState;
 }
 
@@ -38,8 +43,13 @@ void Application::run()
 		
 		currentState->draw(window);
 		
+		window.display();
+		
+		window.clear(currentState->clearColor);
+		
 		if(State::currentState.destroyLast)
 		{
+			State::currentState.destroyLast = false;
 			delete currentState;
 		}
 		currentState = State::currentState.state;

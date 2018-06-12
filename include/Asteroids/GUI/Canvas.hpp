@@ -14,7 +14,7 @@ public:
 	
 	sf::Vector2f getPosition() override;
 	sf::Vector2f getSize() override;
-	void setPosition(sf::Vector2f position) override = 0;
+	void setPosition(sf::Vector2f position) override;
 	
 	void recalculateSize() override;
 };

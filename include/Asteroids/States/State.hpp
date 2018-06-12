@@ -21,6 +21,9 @@ public:
 	virtual void draw(sf::RenderWindow& window) = 0;
 	
 	static ReturnState currentState;
+	
+public:
+	sf::Color clearColor = sf::Color::White;
 
 protected:
 	Canvas canvas;

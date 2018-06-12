@@ -41,6 +41,11 @@ sf::Vector2f Canvas::getSize()
 	return sf::Vector2f(windowSize);
 }
 
+void Canvas::setPosition(sf::Vector2f position)
+{
+	//Canvas has no position
+}
+
 void Canvas::recalculateSize()
 {
 	Widget::recalculateSize();
