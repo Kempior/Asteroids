@@ -177,7 +177,14 @@ void StateGame::update(float dt)
 
 		if (ship.isShooting && ship.remainingDelay <= 0.f) {
 
-			CreateProjectile(ship.position + ship.Forward() * ship.radius, ship.velocity + ship.Forward() * ship.bulletSpeed, ship.bulletLifetime);
+			sf::Vector2f position = ship.position + ship.Forward() * ship.radius;
+			sf::Vector2f velocity = ship.velocity + ship.Forward() * ship.bulletSpeed;
+			
+			CreateProjectile(position, velocity, ship.bulletLifetime);
+			
+			sf::Packet packet;
+			packet << PacketType::PROJECTILESPAWN << position.x << position.y << velocity.x << velocity.y << ship.bulletLifetime;
+			sendPacket(packet);
 
 			ship.remainingDelay = ship.shotDelay;
 		}
@@ -211,12 +218,13 @@ void StateGame::draw(sf::RenderWindow& window)
 	}
 }
 
-void StateGame::sendPacket(sf::Packet &packet)
+void StateGame::sendPacket(sf::Packet &packet, sf::TcpSocket* exclude)
 {
 	if(isHost)
 	{
 		for(auto client : clients)
 		{
+			if(client == exclude) continue;
 			while(client->send(packet) != sf::Socket::Done) {}
 		}
 	}
@@ -250,9 +258,22 @@ void StateGame::recivePackets()
 						
 						sf::Packet repacket;
 						repacket << packetType << id << ship->position.x << ship->position.y << ship->velocity.x << ship->velocity.y << ship->rotation << ship->rotationSpeed;
-						sendPacket(repacket);
+						sendPacket(repacket, client);
 						
 						break;
+					}
+					case PROJECTILESPAWN:
+					{
+						sf::Vector2f position;
+						sf::Vector2f velocity;
+						float lifetime;
+						
+						packet >> position.x >> position.y >> velocity.x >> velocity.y >> lifetime;
+						CreateProjectile(position, velocity, lifetime);
+						
+						sf::Packet repacket;
+						repacket << PacketType::PROJECTILESPAWN << position.x << position.y << velocity.x << velocity.y << lifetime;
+						sendPacket(repacket, client);
 					}
 					default:
 						break;
@@ -274,12 +295,18 @@ void StateGame::recivePackets()
 				{
 					unsigned int id;
 					packet >> id;
-					if(id != playerID)
-					{
-						auto *ship = &ships[id];
-						packet >> ship->position.x >> ship->position.y >> ship->velocity.x >> ship->velocity.y >> ship->rotation >> ship->rotationSpeed;
-					}
+					auto *ship = &ships[id];
+					packet >> ship->position.x >> ship->position.y >> ship->velocity.x >> ship->velocity.y >> ship->rotation >> ship->rotationSpeed;
 					break;
+				}
+				case PROJECTILESPAWN:
+				{
+					sf::Vector2f position;
+					sf::Vector2f velocity;
+					float lifetime;
+					
+					packet >> position.x >> position.y >> velocity.x >> velocity.y >> lifetime;
+					CreateProjectile(position, velocity, lifetime);
 				}
 				default:
 					break;
