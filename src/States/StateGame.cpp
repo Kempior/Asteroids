@@ -10,7 +10,7 @@
 #include <thread>
 #include <chrono>
 
-StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID) {
+StateGame::StateGame(int playerCount, int playerID, unsigned int seed, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize) : worldSize(worldSize), playerID(playerID), mt(seed) {
 
 	isHost = !playerID;
 	
@@ -27,7 +27,7 @@ StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::
 
 	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 
-	CreateAsteroids(20, 0);
+	CreateAsteroids(20);
 }
 
 StateGame::~StateGame()
@@ -39,9 +39,8 @@ StateGame::~StateGame()
 	}
 }
 
-void StateGame::CreateAsteroids(int howMany, unsigned seed) {
-
-	std::mt19937 mt(seed);
+void StateGame::CreateAsteroids(int howMany) {
+	
 	std::uniform_real_distribution<float> xPos(worldSize.left, worldSize.left + worldSize.width);
 	std::uniform_real_distribution<float> yPos(worldSize.top, worldSize.top + worldSize.height);
 
@@ -81,9 +80,7 @@ void StateGame::CreateAsteroids(int howMany, unsigned seed) {
 	}
 }
 
-void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, float scale, unsigned seed) {
-
-	std::mt19937 mt(seed);
+void StateGame::CreateAsteroids(int howMany, sf::Vector2f position, float scale) {
 
 	std::uniform_real_distribution<float> spd(-50, 50);
 	std::uniform_real_distribution<float> rot(0, 360.f);
