@@ -14,7 +14,9 @@ public:
 
 	bool isShooting = false;
 	float shotDelay = 0.5f;
-	float remainingDelay = 0.5f;
+	float remainingDelay = 0.0f;
+	float bulletSpeed = 400.f;
+	float bulletLifetime = 10.f;
 
 	float acceleration = 10.f;
 	float rotationSteering = 220.f;

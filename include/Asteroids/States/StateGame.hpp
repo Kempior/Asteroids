@@ -34,6 +34,8 @@ public:
 
 	void CreateShip(sf::Vector2f position);
 
+	void CreateProjectile(sf::Vector2f position, sf::Vector2f velocity, float lifetime);
+
 	void handleEvent(const sf::Event& event) override;
 	void update(float dt) override;
 	void draw(sf::RenderWindow& window) override;

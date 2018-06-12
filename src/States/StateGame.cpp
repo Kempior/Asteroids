@@ -21,11 +21,13 @@ StateGame::StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::
 	for (int i = 0; i < playerCount; ++i) {
 		CreateShip({worldSize.left + (worldSize.width / (float)(playerCount + 1)) * (i + 1), worldSize.top + worldSize.height * 0.75f});
 	}
+
+	ships[playerID].sprite.setTextureRect({128, 128, 128, 128});
 }
 
 void StateGame::CreateAsteroids(int howMany) {
 
-	std::mt19937 mt(time(NULL));
+	std::mt19937 mt((unsigned)time(nullptr));
 	std::uniform_real_distribution<float> xPos(worldSize.left, worldSize.left + worldSize.width);
 	std::uniform_real_distribution<float> yPos(worldSize.top, worldSize.top + worldSize.height);
 
@@ -53,7 +55,7 @@ void StateGame::CreateAsteroids(int howMany) {
 
 void StateGame::CreateAsteroids(int howMany, sf::Vector2f position) {
 
-	std::mt19937 mt(time(NULL));
+	std::mt19937 mt((unsigned)time(nullptr));
 
 	std::uniform_real_distribution<float> spd(-50, 50);
 	std::uniform_real_distribution<float> rot(0, 360.f);
@@ -90,6 +92,20 @@ void StateGame::CreateShip(sf::Vector2f position) {
 	ships.push_back(newShip);
 }
 
+void StateGame::CreateProjectile(sf::Vector2f position, sf::Vector2f velocity, float lifetime) {
+
+	// Please ignore the... thing... below
+	Projectile boolet(position, velocity, 90 + atan2f(velocity.y, velocity.x) * (180 / (float)M_PI));
+	boolet.lifetime = lifetime;
+
+	boolet.sprite.setTexture(atlasTexture);
+	boolet.sprite.setTextureRect({0, 128, 64, 64});
+
+	boolet.sprite.setOrigin(32, 32);
+
+	projectiles.push_back(boolet);
+}
+
 void StateGame::handleEvent(const sf::Event& event)
 {
 	if (event.type == sf::Event::KeyPressed) {
@@ -102,6 +118,9 @@ void StateGame::handleEvent(const sf::Event& event)
 				break;
 			case sf::Keyboard::D:
 				ships[playerID].isRotatingRight = true;
+				break;
+			case sf::Keyboard::Space:
+				ships[playerID].isShooting = true;
 				break;
 			default:
 				break;
@@ -151,14 +170,24 @@ void StateGame::update(float dt)
 			ship.rotationSpeed = 0.f;
 		}
 
-		if (ship.isShooting) {
-
-		}
-
 		ship.position += ship.velocity * dt;
 		ship.rotation += ship.rotationSpeed * dt;
 
 		ship.Constrain(worldSize, dt);
+
+		if (ship.isShooting && ship.remainingDelay <= 0.f) {
+
+			CreateProjectile(ship.position + ship.Forward() * ship.radius, ship.velocity + ship.Forward() * ship.bulletSpeed, ship.bulletLifetime);
+
+			ship.remainingDelay = ship.shotDelay;
+		}
+
+		ship.remainingDelay -= dt;
+	}
+
+	for (auto &boolet : projectiles) {
+		boolet.position += boolet.velocity * dt;
+		boolet.rotation += boolet.rotationSpeed * dt;
 	}
 	
 	auto *ship = &ships[playerID];
@@ -171,11 +200,14 @@ void StateGame::update(float dt)
 
 void StateGame::draw(sf::RenderWindow& window)
 {
+	for (auto &ship : ships) {
+		ship.Draw(window);
+	}
 	for (auto &roid : asteroids) {
 		roid.Draw(window);
 	}
-	for (auto &ship : ships) {
-		ship.Draw(window);
+	for (auto &boolet : projectiles) {
+		boolet.Draw(window);
 	}
 }
 
