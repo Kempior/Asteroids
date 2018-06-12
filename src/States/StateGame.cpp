@@ -12,8 +12,9 @@ StateGame::StateGame(int playerCount, int playerID, sf::IntRect worldSize) : wor
 	clearColor = sf::Color::Black;
 
 	CreateAsteroids(20);
-	CreateShip({worldSize.left + worldSize.width / 2.f, worldSize.top + worldSize.height / 2.f});
-
+	for (int i = 0; i < playerCount; ++i) {
+		CreateShip({worldSize.left + (worldSize.width / (float)(playerCount + 1)) * (i + 1), worldSize.top + worldSize.height * 0.75f});
+	}
 }
 
 void StateGame::CreateAsteroids(int howMany) {
