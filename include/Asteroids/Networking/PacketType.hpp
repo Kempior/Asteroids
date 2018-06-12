@@ -3,6 +3,7 @@
 
 enum PacketType
 {
+	DISCONNECT,
 	PLAYERCOUNT,
 	START,
 	TRANSFORM,

@@ -28,6 +28,7 @@ class StateGame : public State
 public:
 	//Yes, I'm lazy;
 	explicit StateGame(int playerCount, int playerID, sf::TcpSocket* server, std::vector<sf::TcpSocket*> clients, sf::IntRect worldSize = sf::IntRect(0, 0, 1600, 900));
+	~StateGame() override;
 
 	void CreateAsteroids(int howMany);
 	void CreateAsteroids(int howMany, sf::Vector2f position);
