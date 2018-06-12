@@ -41,7 +41,7 @@ public:
 	void draw(sf::RenderWindow& window) override;
 
 private:
-	void sendPacket(sf::Packet& packet);
+	void sendPacket(sf::Packet& packet, sf::TcpSocket* exclude = nullptr);
 	void recivePackets();
 };
 
