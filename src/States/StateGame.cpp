@@ -277,11 +277,15 @@ void StateGame::update(float dt)
 		if(isHost)
 		{
 			CreateAsteroids(10 * wave);
-		}
-		
-		for(auto &ship : ships)
-		{
-			ship.isDestroyed = false;
+			
+			for(auto &ship : ships)
+			{
+				if(ship.isDestroyed)
+				{
+					ship.isDestroyed = false;
+					ship.velocity = {};
+				}
+			}
 		}
 		
 		sf::Packet packet;
@@ -462,7 +466,14 @@ void StateGame::recivePackets()
 				}
 				case RESPAWNPLAYER:
 				{
-					ships[playerID].isDestroyed = false;
+					for(auto &ship : ships)
+					{
+						if(ship.isDestroyed)
+						{
+							ship.isDestroyed = false;
+							ship.velocity = {};
+						}
+					}
 				}
 				default:
 					break;
