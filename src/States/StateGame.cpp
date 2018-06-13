@@ -278,6 +278,12 @@ void StateGame::update(float dt)
 		{
 			CreateAsteroids(10 * wave);
 		}
+		
+		ships[playerID].isDestroyed = false;
+		
+		sf::Packet packet;
+		packet << PacketType::RESPAWNPLAYER;
+		sendPacket(packet);
 	}
 
 	// Collisions between player and asteroids
@@ -450,6 +456,10 @@ void StateGame::recivePackets()
 					packet >> position.x >> position.y >> velocity.x >> velocity.y >> rot >> rotSpeed;
 					asteroids.push_back(CreateAsteroid(position, velocity, rot, rotSpeed, 1));
 					break;
+				}
+				case RESPAWNPLAYER:
+				{
+					ships[playerID].isDestroyed = false;
 				}
 				default:
 					break;
