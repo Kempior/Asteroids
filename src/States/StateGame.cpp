@@ -279,7 +279,10 @@ void StateGame::update(float dt)
 			CreateAsteroids(10 * wave);
 		}
 		
-		ships[playerID].isDestroyed = false;
+		for(auto &ship : ships)
+		{
+			ship.isDestroyed = false;
+		}
 		
 		sf::Packet packet;
 		packet << PacketType::RESPAWNPLAYER;
@@ -289,9 +292,9 @@ void StateGame::update(float dt)
 	// Collisions between player and asteroids
 	for (auto &asteroid : asteroids) {
 		if (!ships[playerID].isDestroyed && ships[playerID].Collide(asteroid)) {
-			ships[playerID].isDestroyed = true;
 			
-			sf::Packet packet;
+			
+			sf::Packet packet;ships[playerID].isDestroyed = true;
 			packet << PacketType::SHIPDESTROYED << playerID;
 			sendPacket(packet);
 		}
