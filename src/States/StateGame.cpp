@@ -239,7 +239,7 @@ void StateGame::update(float dt)
 			packet << PacketType::PROJECTILESPAWN << position.x << position.y << velocity.x << velocity.y << ship.bulletLifetime;
 			sendPacket(packet);
 
-			ship.remainingDelay = ship.shotDelay;
+			ship.remainingDelay = ship.shotDelay * (0.3f + 0.7f * (1.f / wave));
 		}
 
 		ship.remainingDelay -= dt;
@@ -273,11 +273,11 @@ void StateGame::update(float dt)
 	}
 
 	if (asteroids.empty()) {
-		wave++;
 		if(isHost)
 		{
 			CreateAsteroids(10 * wave);
-			
+			wave++;
+
 			for(auto &ship : ships)
 			{
 				if(ship.isDestroyed)
@@ -466,6 +466,8 @@ void StateGame::recivePackets()
 				}
 				case NEWWAVE:
 				{
+					wave++;
+
 					for(auto &ship : ships)
 					{
 						if(ship.isDestroyed)
