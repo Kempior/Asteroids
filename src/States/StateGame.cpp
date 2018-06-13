@@ -289,7 +289,7 @@ void StateGame::update(float dt)
 		}
 		
 		sf::Packet packet;
-		packet << PacketType::RESPAWNPLAYER;
+		packet << PacketType::NEWWAVE;
 		sendPacket(packet);
 	}
 
@@ -464,7 +464,7 @@ void StateGame::recivePackets()
 					asteroids.push_back(CreateAsteroid(position, velocity, rot, rotSpeed, 1));
 					break;
 				}
-				case RESPAWNPLAYER:
+				case NEWWAVE:
 				{
 					for(auto &ship : ships)
 					{
